@@ -1,0 +1,267 @@
+<div class="familia-page">
+    <div 
+        class="sidebar-backdrop" 
+        *ngIf="!sidebar.collapsed" 
+        (click)="sidebar.collapsed = true"
+    >
+    </div>
+    <app-sidebar #sidebar></app-sidebar>
+    <div class="familia-container" [class.blurred]="!sidebar.collapsed">
+        <h2>Listado de Familias</h2> 
+        <div class="familia-search">
+            <form class="search-form">
+                <input 
+                    type="text" 
+                    class="search-bar"
+                    placeholder="Buscar familias" 
+                    name="search"
+                    [(ngModel)]="searchTerm"
+                >
+            </form>
+            <button class="search-btn" (click)="searchFamilias()">Buscar</button>
+        </div>
+        <h1 class="errorBtn">{{ familiaMessageError }}</h1>
+        <div class="familias-download">
+            <button class="download-btn" (click)="excelDownload()">Descargar como Excel</button>
+            <button class="print-btn" (click)="toPrint()">Impreso</button>
+        </div>
+        <div class="familia-list">
+            <h1 class="errorBtn">{{ tableMessage }}</h1>
+            <h1 class="successBtn">{{ familiaMessage }}</h1>
+            <button class="add-familia-btn" (click)="launchAddFamilia()">Añadir</button>
+            <table class="familia-table">
+                <thead>
+                    <tr>
+                        <th>Familia</th>
+                        <th>Descripción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let p of paginatedFamilias">
+                        <td style="cursor: pointer;" (click)="showDetails(p)">{{ p.afacod }}</td>
+                        <td>{{ p.afades }}</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="pagination-controls">
+                <button (click)="prevPage()" [disabled]="page === 0">Anterior</button>
+                <span>Página</span>
+                <input
+                    type="number"
+                    min="1"
+                    [max]="totalPages"
+                    [value]="page + 1"
+                    (change)="goToPage($event)"
+                    class="pagination-input"
+                    class="pagination-input"
+                />
+                <span>de {{ totalPages }}</span>
+                <button (click)="nextPage()" [disabled]="page + 1 >= totalPages">Siguiente</button>
+            </div>
+            <div class="modal-backdrop" *ngIf="selectedFamilias" (click)="closeDetails()"></div>
+            <div class="display" >
+                <div class="modal" *ngIf="selectedFamilias">
+                    <button class="close-btn-fct" (click)="closeDetails()">×</button>
+                    <h3>Detalles de Familia</h3>
+                    <div class="details">
+                        <div class="left-row">
+                            <p>Familia</p>
+                            <p>Descripción</p>
+                        </div>
+                        <div class="right-row">
+                            <input 
+                                type="text" 
+                                name="familia" 
+                                [(ngModel)]="selectedFamilias.afacod" 
+                                readonly 
+                            />
+                            <input 
+                                type="text" 
+                                name="Descripción" 
+                                [value]="selectedFamilias.afades" 
+                                #descripcionRef
+                                class="width"  
+                            />
+                        </div>
+                    </div>
+                    <h4 class="errorBtn">{{ familiaErrorMessage }}</h4>
+                    <h4 class="successBtn">{{ familiaSucessMessage }}</h4>
+                    <div class="action-buttons">  
+                        <button 
+                            class="familia-save-btn" 
+                            (click)="updateFamilia(selectedFamilias.afacod, descripcionRef.value)"
+                        >
+                        Guardar
+                        </button>
+                        <button 
+                            class="familia-delete-btn" 
+                            (click)="openDeleteConfirm(selectedFamilias.afacod)"
+                        >
+                        Eliminar</button>
+                    </div>
+                    <div class="subfamilias">
+                        <h1>Subfamilia</h1>
+                        <h4 class="errorBtn">{{ afacodError }}</h4>
+                        <table class="subfamilia-table">
+                            <thead>
+                                <tr>
+                                    <th>Subfamilia</th>
+                                    <th>Descripción</th>
+                                    <th>Económica</th>
+                                    <th>Tipo almacenaje</th>
+                                    <th>Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let s of subfamilias">
+                                    <td>
+                                        <input 
+                                            type="text" 
+                                            [(ngModel)]="s.asucod" 
+                                            readonly
+                                        />
+                                    </td>
+                                    <td>
+                                        <input
+                                            type="text"
+                                            [(ngModel)]="s.asudes"
+                                            class="width"
+                                            #Description
+                                        />
+                                    </td>
+                                    <td>
+                                        <input
+                                            type="text"
+                                            [(ngModel)]="s.asueco" 
+                                            maxlength="5"
+                                            #Economica
+                                            (input)="allowOnlyDigits($event)"
+                                        />
+                                    </td>
+                                    <td>
+                                        <ng-container>
+                                            <select 
+                                                *ngIf="s.mta?.length; else noAlmacenaje"
+                                                class="mta-list"
+                                                [ngModel]="s.mtacod"
+                                                (ngModelChange)="onMtaChange(s, $event)"
+                                                name="almacenaje-{{ s.asucod }}"
+                                                #almacenajeModel="ngModel"
+                                            >
+                                                <option 
+                                                    *ngFor="let almacen of s.mta"
+                                                    [ngValue]="almacen.mtacod"
+                                                >
+                                                    {{ almacen.mtacod }} - {{ almacen.mtades }}
+                                                </option>
+                                            </select>
+                                        </ng-container>
+                                        <ng-template #noAlmacenaje>Sin datos</ng-template>
+                                    </td>
+                                    <td class="gap">
+                                        <button 
+                                            class="sub-save-btn" 
+                                            (click)="updateSubfamilia(s.afacod, s.asucod, Description.value, Economica.value, s.mtacod)"
+                                        >
+                                            💾
+                                        </button>
+                                        <button class="sub-delete-btn" (click)="deleteSubfamilia(s.afacod, s.asucod)">-</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <h4 class="errorBtn">{{ errorUpdateMessage }}</h4>
+                        <h4 class="successBtn">{{ successUpdateMEssage }}</h4>
+                        <div class="button-subs">
+                            <button class="subFamilias-add-btn" (click)="launchAddSubFamilia()">Añadir</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal-backdrop" *ngIf="showDeleteConfirm" (click)="closeDeleteConfirm()"></div>
+<div class="delete-confirm-modal" *ngIf="showDeleteConfirm">
+    <h3>¿Seguro que quieres eliminar este Familia?</h3>
+    <div *ngIf="familiaToDelete">
+        <p><strong>Familia:</strong> {{ familiaToDelete }}</p>
+    </div>
+    <button class="articulos-delete-confirm-btn" (click)="confirmDelete()">Sí, eliminar</button>
+    <button class="articulos-cancel-confirm-btn" (click)="closeDeleteConfirm()">Cancelar</button>
+</div>
+
+<div class="modal-backdrop" *ngIf="showAddConfirm" (click)="closeAddConfirm()"></div>
+<div class="add-confirm-modal" *ngIf="showAddConfirm">
+    <h3>Añadir una Familia</h3>
+    <div class="add-content">
+        <div class="left-row">
+            <p>Familia</p>
+            <p>Descripción</p>
+        </div>
+        <div class="right-row">
+            <input 
+                type="text" 
+                name="familia" 
+                maxlength="4"
+                (input)="familiaInput.value = familiaInput.value.toUpperCase()"
+                #familiaInput
+            />
+            <input 
+                type="text" 
+                name="Descripción" 
+                class="width"  
+                #descripcionInput
+            />
+        </div>
+    </div>
+    <h1 class="errorBtn">{{ familiaAddError }}</h1>
+    <button class="familias-add-btn" (click)="addFamilia(familiaInput.value, descripcionInput.value)">Añadir</button>
+    <button class="articulos-delete-confirm-btn" (click)="closeAddConfirm()">Cancelar</button>
+</div>
+
+<div class="modal-backdrop" *ngIf="showAddConfirmSub" (click)="closeAddConfirmSub()"></div>
+<div class="add-sub-modal" *ngIf="showAddConfirmSub">
+    <h3>Añadir una Subfamilia</h3>
+    <div class="add-content">
+        <div class="left-row">
+            <p>Subfamilia</p>
+            <p>Descripción</p>
+            <p>Económica</p>
+            <p>Tipo de almacenaje</p>
+        </div>
+        <div class="right-row">
+            <input 
+                type="text" 
+                name="subfamilia" 
+                maxlength="4"
+                (input)="forceUppercase($event)"
+                #subfamiliaInput
+            />
+            <input 
+                type="text" 
+                name="Descripción" 
+                #descripcionInput
+            />
+            <input 
+                type="text" 
+                name="economica" 
+                #economicaInput
+                (input)="allowOnlyDigits($event)"
+            />
+            <select
+                name="almacenaje"
+                #almacenajeInput
+                class="add-select"
+            >
+                <option *ngFor="let almacen of almacenajes" [value]="almacen.mtacod">
+                    {{ almacen.mtacod }} - {{ almacen.mtades }}
+                </option>
+            </select>
+        </div>
+    </div>
+    <h1 class="errorBtn">{{ subAddError }}</h1>
+    <button class="familias-add-btn" (click)="addSub(subfamiliaInput.value, descripcionInput.value, economicaInput.value, almacenajeInput.value)">Añadir</button>
+    <button class="articulos-delete-confirm-btn" (click)="closeAddConfirmSub()">Cancelar</button>
+</div>
