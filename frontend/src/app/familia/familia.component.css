@@ -1,15 +1,15 @@
 /* search */
-.title-area { width: 20%; }
+.title-area { width: 18%; justify-content: flex-end;}
 .search-container {gap: 10px; }
 /* search */
 /* all tables */
-.familia-list { width: 50%; }
-.familia-table thead th:first-child,
-.subfamilia-table thead th:first-child { width: 15%; }
-.subfamilia-table thead th:nth-child(3),
-.subfamilia-table thead th:nth-child(4),
-.subfamilia-table thead th:nth-child(5) { width: 12%; }
-.subfamilia-table tbody td:last-child {text-align: center;}
+.ftl { width: 50%; }
+.fT thead th:first-child,
+.sft thead th:first-child { width: 15%; }
+.sft thead th:nth-child(3),
+.sft thead th:nth-child(4),
+.sft thead th:nth-child(5) { width: 12%; }
+.sft tbody td:last-child {text-align: center;}
 /* all tables */
 /* detail grid */
 .detail-container { display: flex;flex-direction: column; gap: 5px; padding: 1%;}
@@ -17,47 +17,26 @@
 .left { width: 5%; display: flex; flex-direction: column; gap: 10px; justify-content: center; }
 .right { width: 95%; display: flex; flex-direction: column; gap: 10px;}
 .on-two { display: flex; gap: 10px; align-items: center;}
-.chunk p,
-.chunk h1,
-.left-add p { font-size: 14px; font-weight: bold; color: #25176b; }
-.chunk h1 {color: #162a3a; font-size: 18px;}
-.chunk textarea,
-.subfamilia-table textarea,
-.right-add textarea,
-.right-add select,
-.subfamilia-table select { height: 20px; padding: 2px 4px; border-radius: 6px; font-weight: bold; color: #162a3a;}
-.subfamilia-table select,
-.right-add select {height: 25px;}
-.chunk textarea:focus,
-.subfamilia-table textarea:focus,
-.right-add textarea:focus,
-.right-add select:focus,
-.subfamilia-table select:focus { outline: none; border-color: #042b5a; outline: none; background: #fff; } 
 .tallText { width: 450px; max-width: 625px;}
-.subFamilias-add-btn {margin-top: 10px;}
+.space {margin-top: 10px;}
 /* detail grid */
-.sub-delete-btn,
-.articulos-cancel-confirm-btn { margin-left: 5px;}
-.subfamilia-table tbody option,
+.margin-btn { margin-right: 5px;}
+.sft tbody option,
 .right-add select option { font-weight: bold; font-size: inherit; }
 .butt {display: flex; justify-content: center;}
+.mta-list {height: 30px;}
 /* detail grid */
 /* modals */
 .add-sub-modal { width: 45%; display: flex; flex-direction: column; top: 35%;}
 .add-content { display: flex; }
-.left-add { width: 20%; text-align: left; display: flex; flex-direction: column; gap: 20px;}
-.right-add { display: flex; flex-direction: column; gap: 10px;}
+.left-add { width: 30%; text-align: left; display: flex; flex-direction: column; gap: 20px;}
+.right-add { display: flex; flex-direction: column; gap: 15px;}
 .right-add select { margin-top: 5px;}
 .title { width: 90%;}
 .add-confirm-modal{ width: 40%; }
 .addTallText { width: 220px; max-width: 450px;}
 .addSmallText { width: 80px; max-width: 200px;}
 /* modals */
-@media (min-width: 1800px) {
-  .familia-container h2 { font-size: 25px; }
-  .familia-list { width: 60%; }
-  .familia-table thead th,
-  .subfamilia-table thead th { font-size: 17px; }
-  .familia-table tbody td,
-  .subfamilia-table tbody td { font-size: 16px; }
+@media (max-width: 1299px), (min-width: 1350px) {
+  .delete-confirm-modal {top: 40%;}
 }
